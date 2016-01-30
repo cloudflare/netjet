@@ -1,9 +1,9 @@
 'use strict';
-var _ = require('lodash');
+var assign = require('lodash.assign');
 
 module.exports = function (options, found) {
   return function (tree) {
-    _.extend(found, {
+    assign(found, {
       images: [],
       scripts: [],
       styles: []
