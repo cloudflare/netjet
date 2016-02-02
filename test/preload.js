@@ -1,6 +1,11 @@
 'use strict';
-/* globals describe, before, it */
+require('core-js/shim');
+
+var describe = require('mocha').describe;
+var before = require('mocha').before;
+var it = require('mocha').it;
 var expect = require('assume');
+
 var http = require('http');
 var preload = require('../');
 var request = require('supertest');

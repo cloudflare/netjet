@@ -4,11 +4,12 @@
   "description": "Express middleware to generate preload headers",
   "main": "index.js",
   "scripts": {
-    "test": "xo && istanbul cover -- _mocha --check-leaks --reporter spec"
+    "test": "xo && istanbul cover -- _mocha --check-leaks --reporter spec",
+    "coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cloudflare/vahevara.git"
+    "url": "git+https://github.com/cloudflare/netjet.git"
   },
   "keywords": [
     "express",
@@ -19,9 +20,9 @@
   "author": "Terin Stock <terinjokes@gmail.com> (https://terinstock.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cloudflare/vahevara/issues"
+    "url": "https://github.com/cloudflare/netjet/issues"
   },
-  "homepage": "https://github.com/cloudflare/vahevara#readme",
+  "homepage": "https://github.com/cloudflare/netjet#readme",
   "files": [
     "index.js",
     "posthtml-preload.js"
@@ -36,6 +37,8 @@
   },
   "devDependencies": {
     "assume": "^1.3.1",
+    "core-js": "^2.0.3",
+    "coveralls": "^2.11.6",
     "detour": "^1.3.0",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
