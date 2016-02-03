@@ -7,12 +7,17 @@ var defaults = require('lodash.defaults');
 var hijackresponse = require('hijackresponse');
 var bl = require('bl');
 
+var LRU = require('lru-cache');
+
 module.exports = function netjet(options) {
   options = defaults(options, {
     images: true,
     scripts: true,
-    styles: true
+    styles: true,
+    cache: {}
   });
+
+  var cache = new LRU(options.cache);
 
   return function (req, res, next) {
     function appendHeader(field, value) {
@@ -25,28 +30,21 @@ module.exports = function netjet(options) {
       res.setHeader(field, value);
     }
 
-    function insertLinks(urls, asType) {
-      urls.forEach(function (url) {
+    function insertLinkArray(entries) {
+      entries.forEach(function (entry) {
+        var url = entry[0];
+        var asType = entry[1];
+
         appendHeader('Link', '<' + unescape(url) + '>; rel=preload; as=' + asType);
       });
     }
 
     function processBody(body) {
-      var found = {};
+      var foundEntries = [];
 
-      posthtml().use(posthtmlPreload(options, found)).process(body);
+      posthtml().use(posthtmlPreload(options, foundEntries)).process(body);
 
-      if (options.images) {
-        insertLinks(found.images, 'image');
-      }
-
-      if (options.scripts) {
-        insertLinks(found.scripts, 'script');
-      }
-
-      if (options.styles) {
-        insertLinks(found.styles, 'style');
-      }
+      return foundEntries;
     }
 
     hijackresponse(res, function (err, res) {
@@ -54,21 +52,41 @@ module.exports = function netjet(options) {
       // `err` from hijackresponse is currently hardcoded to "null"
       if (err) {
         res.unhijack();
-        return next(err);
+        next(err);
+        return;
       }
 
       // Only hijack HTML responses
       if (!/^text\/html(?:;|\s|$)/.test(res.getHeader('Content-Type'))) {
-        return res.unhijack();
+        res.unhijack();
+        return;
+      }
+
+      var etag = res.getHeader('etag');
+      var entries;
+
+      // reuse previous parse if the etag already exists in cache
+      if (etag) {
+        entries = cache.get(etag);
+
+        if (entries) {
+          insertLinkArray(entries);
+          res.pipe(res);
+          return;
+        }
       }
 
       res.pipe(bl(function (err, data) {
         if (err) {
           res.unhijack();
-          return next(err);
+          next(err);
+          return;
         }
 
-        processBody(data.toString());
+        entries = processBody(data.toString());
+
+        insertLinkArray(entries);
+        cache.set(etag, entries);
 
         res.end(data);
       }));

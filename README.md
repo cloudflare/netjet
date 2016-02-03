@@ -16,13 +16,24 @@ express()
   .listen(1337);
 ```
 
-## Node.js 0.10 Requirements
+## ⚠️ Node.js 0.10 Requirements ⚠️
 
 This module utilizes the [`posthtml`][posthtml] module to find images, scripts, and stylesheets in your HTML response.
 PostHTML requires a native Promise implementation or shim, so users of Node.js 0.10 will need to ensure a Promise shim has been configured.
+
+## Options
+
+* **images**, **scripts**, and **styles**: `Boolean`:
+
+    If `true` the corresponding subresources are parsed and added as a Preload Link headers.
+
+* **cache**: `Object`:
+
+    Object passed straight to [`lru-cache`][lru-cache]. It is highly recommended to set `cache.max` to an integer.
 
 ## License
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://www.tldrlegal.com/l/mit) see `LICENSE.md`.
 
 [preload]: https://www.w3.org/TR/preload/
-[posthtml]: https://github.com/posthtml/posthtml
+[posthtml]: https://github.com/posthtml/posthtml#readme
+[lru-cache]: https://github.com/isaacs/node-lru-cache#readme

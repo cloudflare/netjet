@@ -1,14 +1,7 @@
 'use strict';
-var assign = require('lodash.assign');
 
-module.exports = function (options, found) {
+module.exports = function (options, foundEntries) {
   return function (tree) {
-    assign(found, {
-      images: [],
-      scripts: [],
-      styles: []
-    });
-
     var matchers = [];
 
     if (options.images) {
@@ -27,13 +20,13 @@ module.exports = function (options, found) {
       tree.match(matchers, function (node) {
         switch (node.tag) {
           case 'img':
-            found.images.push(node.attrs.src);
+            foundEntries.push([node.attrs.src, 'image']);
             break;
           case 'script':
-            found.scripts.push(node.attrs.src);
+            foundEntries.push([node.attrs.src, 'script']);
             break;
           case 'link':
-            found.styles.push(node.attrs.href);
+            foundEntries.push([node.attrs.href, 'style']);
             break;
           // no default
         }
@@ -41,6 +34,6 @@ module.exports = function (options, found) {
       });
     }
 
-    return found;
+    return foundEntries;
   };
 };

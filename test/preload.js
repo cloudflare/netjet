@@ -3,27 +3,26 @@ require('core-js/shim');
 
 var describe = require('mocha').describe;
 var before = require('mocha').before;
+var beforeEach = require('mocha').beforeEach;
 var it = require('mocha').it;
 var expect = require('assume');
 
 var http = require('http');
 var preload = require('../');
-var request = require('supertest');
+var request = require('supertest-as-promised')(Promise);
+var td = require('testdouble');
 
 var detour = require('detour');
-var router = detour();
 
 describe('preload', function () {
   describe('requests', function () {
-    var server;
-
     describe('skips non-HTML', function () {
       before(function () {
-        server = createServer();
+        this.server = createServer();
       });
 
       it('should not parse binary responses', function (done) {
-        request(server)
+        request(this.server)
           .get('/static/image.png')
           .expect('Content-Type', 'image/png')
           .expect(function (res) {
@@ -33,7 +32,7 @@ describe('preload', function () {
       });
 
       it('should not parse JSON responses', function (done) {
-        request(server)
+        request(this.server)
           .get('/api/whoami')
           .expect('Content-Type', 'application/json')
           .expect(function (res) {
@@ -45,7 +44,7 @@ describe('preload', function () {
 
     describe('should parse out images', function () {
       before(function () {
-        server = createServer({
+        this.server = createServer({
           images: true,
           scripts: false,
           styles: false
@@ -53,7 +52,7 @@ describe('preload', function () {
       });
 
       it('should create Link header for single image', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/single-image')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image')
@@ -61,7 +60,7 @@ describe('preload', function () {
       });
 
       it('should create Link header for multiple images', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/mutli-image')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image, </images/2015/12/London.jpg>; rel=preload; as=image')
@@ -69,7 +68,7 @@ describe('preload', function () {
       });
 
       it('should not create Link header for scripts', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/single-image-and-script')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image')
@@ -79,7 +78,7 @@ describe('preload', function () {
 
     describe('should parse out scripts', function () {
       before(function () {
-        server = createServer({
+        this.server = createServer({
           images: false,
           scripts: true,
           styles: false
@@ -87,7 +86,7 @@ describe('preload', function () {
       });
 
       it('should create Link header for single script', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/single-script')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</jquery.min.js>; rel=preload; as=script')
@@ -95,7 +94,7 @@ describe('preload', function () {
       });
 
       it('should create Link header for mutliple scripts', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/multi-script')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</jquery.min.js>; rel=preload; as=script, </bootstrap.min.js>; rel=preload; as=script')
@@ -103,7 +102,7 @@ describe('preload', function () {
       });
 
       it('should not create Link header for images', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/single-script-and-image')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</jquery.min.js>; rel=preload; as=script')
@@ -111,7 +110,7 @@ describe('preload', function () {
       });
 
       it('should not create Link header for inline scripts', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/including-inline-script')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</jquery.min.js>; rel=preload; as=script')
@@ -121,7 +120,7 @@ describe('preload', function () {
 
     describe('should parse out stylesheets', function () {
       before(function () {
-        server = createServer({
+        this.server = createServer({
           images: false,
           scripts: false,
           styles: true
@@ -129,7 +128,7 @@ describe('preload', function () {
       });
 
       it('should create Link header for single style', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/single-style')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</app.min.css>; rel=preload; as=style')
@@ -137,7 +136,7 @@ describe('preload', function () {
       });
 
       it('should create Link header for mutliple styles', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/multi-style')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</bootstrap.min.css>; rel=preload; as=style, </app.min.css>; rel=preload; as=style')
@@ -145,7 +144,7 @@ describe('preload', function () {
       });
 
       it('should not create Link header for scripts', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/single-style-and-script')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</app.min.css>; rel=preload; as=style')
@@ -153,7 +152,7 @@ describe('preload', function () {
       });
 
       it('should not create Link header for other <link> types', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/other-link-types')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</app.min.css>; rel=preload; as=style')
@@ -163,11 +162,11 @@ describe('preload', function () {
 
     describe('parses all types', function () {
       before(function () {
-        server = createServer();
+        this.server = createServer();
       });
 
       it('should create Link headers for all types', function (done) {
-        request(server)
+        request(this.server)
           .get('/blog/all')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image, </jquery.min.js>; rel=preload; as=script, </app.min.css>; rel=preload; as=style')
@@ -176,7 +175,7 @@ describe('preload', function () {
     });
 
     it('should parse on 404 HTML pages', function (done) {
-      server = createServer();
+      var server = createServer();
 
       request(server)
         .get('/404')
@@ -185,10 +184,89 @@ describe('preload', function () {
         .expect(404, done);
     });
   });
+
+  describe('cache', function () {
+    beforeEach(function () {
+      this.disposer = td.function();
+
+      this.server = createEtagServer({
+        cache: {
+          max: 2,
+          dispose: this.disposer
+        }
+      });
+    });
+
+    it('should use the values from cache if etags', function () {
+      var server = this.server;
+
+      request(server)
+        .get('/etag/setEtag100')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image')
+        .expect(200)
+        .then(function () {
+          return request(server)
+            .get('/etag/alsoServeEtag100')
+            .expect('Content-Type', 'text/html; charset=utf-8')
+            .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image')
+            .expect(function (res) {
+              expect(res.headers.link).to.not.contain('droids');
+            })
+            .expect(200);
+        });
+    });
+
+    it('should evict items from cache', function () {
+      var server = this.server;
+      var disposer = this.disposer;
+
+      return request(server)
+        .get('/etag/etag1/1')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect('Link', '</images/etag1.png?count=1>; rel=preload; as=image')
+        .expect(200)
+        .then(function () {
+          // add a second item to the cache
+          return request(server)
+            .get('/etag/etag2/2')
+            .expect('Content-Type', 'text/html; charset=utf-8')
+            .expect('Link', '</images/etag2.png?count=2>; rel=preload; as=image')
+            .expect(200);
+        })
+        .then(function () {
+          td.verify(disposer(), {
+            times: 0,
+            ignoreExtraArgs: true
+          });
+        })
+        .then(function () {
+          // add a third item to the cache (should evict the first request)
+          return request(server)
+            .get('/etag/etag3/3')
+            .expect('Content-Type', 'text/html; charset=utf-8')
+            .expect('Link', '</images/etag3.png?count=3>; rel=preload; as=image')
+            .expect(200);
+        })
+        .then(function () {
+          td.verify(disposer('1', [
+            ['/images/etag1.png?count=1', 'image']
+          ]));
+        })
+        .then(function () {
+          return request(server)
+            .get('/etag/etag1/4')
+            .expect('Content-Type', 'text/html; charset=utf-8')
+            .expect('Link', '</images/etag1.png?count=4>; rel=preload; as=image')
+            .expect(200);
+        });
+    });
+  });
 });
 
 function createServer(options) {
   var _preload = preload(options);
+  var router = detour();
 
   router.route('/static/image.png', {
     GET: function (req, res) {
@@ -321,6 +399,69 @@ function createServer(options) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.write('<img src="/images/droids.png" alt="This is not the page you\'re looking for!" />');
     res.end();
+  });
+
+  var server = http.createServer(function (req, res) {
+    _preload(req, res, function () {
+      router.middleware(req, res);
+    });
+  });
+
+  return server;
+}
+
+function createEtagServer(options) {
+  var _preload = preload(options);
+  var router = detour();
+
+  router.route('/etag/setEtag100', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Etag', '100');
+      res.write('<img src="/images/2015/12/Cairo.jpg" alt="Cairo" />');
+      res.end();
+    }
+  });
+
+  router.route('/etag/alsoServeEtag100', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Etag', '100');
+      res.write('<img src="/images/droids.png" alt="This is not the page you\'re looking for!" />');
+      res.end();
+    }
+  });
+
+  router.route('/etag/etag1/:count', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Etag', '1');
+      res.write('<img src="/images/etag1.png?count=' + req.pathVar.count + '" alt="This is not the page you\'re looking for!" />');
+      res.end();
+    }
+  });
+
+  router.route('/etag/etag2/:count', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Etag', '2');
+      res.write('<img src="/images/etag2.png?count=' + req.pathVar.count + '"  alt="This is not the page you\'re looking for!" />');
+      res.end();
+    }
+  });
+
+  router.route('/etag/etag3/:count', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Etag', '3');
+      res.write('<img src="/images/etag3.png?count=' + req.pathVar.count + '" alt="This is not the page you\'re looking for!" />');
+      res.end();
+    }
   });
 
   var server = http.createServer(function (req, res) {
