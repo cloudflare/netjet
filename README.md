@@ -16,11 +16,6 @@ express()
   .listen(1337);
 ```
 
-## ⚠️ Node.js 0.10 Requirements ⚠️
-
-This module utilizes the [`posthtml`][posthtml] module to find images, scripts, and stylesheets in your HTML response.
-PostHTML requires a native Promise implementation or shim, so users of Node.js 0.10 will need to ensure a Promise shim has been configured.
-
 ## Options
 
 * **images**, **scripts**, and **styles**: `Boolean`:

@@ -42,7 +42,7 @@ module.exports = function netjet(options) {
     function processBody(body) {
       var foundEntries = [];
 
-      posthtml().use(posthtmlPreload(options, foundEntries)).process(body);
+      posthtml().use(posthtmlPreload(options, foundEntries)).process(body, {sync: true});
 
       return foundEntries;
     }
