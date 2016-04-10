@@ -1,13 +1,11 @@
 'use strict';
 var posthtml = require('posthtml');
-var posthtmlPreload = require('./posthtml-preload');
-
 var unescape = require('lodash.unescape');
 var defaults = require('lodash.defaults');
 var hijackresponse = require('hijackresponse');
 var bl = require('bl');
-
 var LRU = require('lru-cache');
+var posthtmlPreload = require('./posthtml-preload');
 
 module.exports = function netjet(options) {
   options = defaults(options, {

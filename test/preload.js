@@ -1,16 +1,14 @@
 'use strict';
+var http = require('http');
 var describe = require('mocha').describe;
 var before = require('mocha').before;
 var beforeEach = require('mocha').beforeEach;
 var it = require('mocha').it;
 var expect = require('assume');
-
-var http = require('http');
-var preload = require('../');
 var request = require('supertest-as-promised');
 var td = require('testdouble');
-
 var detour = require('detour');
+var preload = require('../');
 
 describe('preload', function () {
   describe('requests', function () {
