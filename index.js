@@ -17,7 +17,7 @@ module.exports = function netjet(options) {
 
   var cache = new LRU(options.cache);
 
-  return function (req, res, next) {
+  return function netjetMiddleware(req, res, next) {
     function appendHeader(field, value) {
       var prev = res.getHeader(field);
 
