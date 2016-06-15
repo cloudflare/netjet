@@ -5,15 +5,30 @@ module.exports = function (options, foundEntries) {
     var matchers = [];
 
     if (options.images) {
-      matchers.push({tag: 'img', attrs: {src: true}});
+      matchers.push({
+        tag: 'img',
+        attrs: {
+          src: true
+        }
+      });
     }
 
     if (options.scripts) {
-      matchers.push({tag: 'script', attrs: {src: true}});
+      matchers.push({
+        tag: 'script',
+        attrs: {
+          src: true
+        }
+      });
     }
 
     if (options.styles) {
-      matchers.push({tag: 'link', attrs: {rel: 'stylesheet'}});
+      matchers.push({
+        tag: 'link',
+        attrs: {
+          rel: 'stylesheet'
+        }
+      });
     }
 
     if (matchers) {
