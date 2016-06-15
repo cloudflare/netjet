@@ -44,7 +44,7 @@
     "supertest": "^1.1.0",
     "supertest-as-promised": "^3.0.0",
     "testdouble": "^1.0.0",
-    "xo": "^0.15.0"
+    "xo": "^0.16.0"
   },
   "xo": {
     "space": true
