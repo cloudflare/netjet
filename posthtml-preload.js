@@ -31,7 +31,7 @@ module.exports = function (options, foundEntries) {
       });
     }
 
-    if (matchers) {
+    if (matchers.length) {
       tree.match(matchers, function (node) {
         switch (node.tag) {
           case 'img':
