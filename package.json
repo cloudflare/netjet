@@ -40,7 +40,7 @@
     "coveralls": "^2.11.6",
     "detour": "^1.3.0",
     "istanbul": "^0.4.2",
-    "mocha": "^2.4.5",
+    "mocha": "^3.0.0",
     "supertest": "^1.1.0",
     "supertest-as-promised": "^3.0.0",
     "testdouble": "^1.0.0",
