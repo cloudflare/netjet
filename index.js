@@ -7,6 +7,13 @@ var bl = require('bl');
 var LRU = require('lru-cache');
 var posthtmlPreload = require('./posthtml-preload');
 
+function encodeRFC5987(str) {
+  return encodeURI(str)
+    .replace(/['()]/g, escape)
+    .replace(/\*/g, '%2A')
+    .replace(/%(?:7C|60|5E)/g, unescape);
+}
+
 module.exports = function netjet(options) {
   options = defaults(options, {
     images: true,
@@ -33,7 +40,7 @@ module.exports = function netjet(options) {
         var url = entry[0];
         var asType = entry[1];
 
-        appendHeader('Link', '<' + unescape(url) + '>; rel=preload; as=' + asType);
+        appendHeader('Link', '<' + encodeRFC5987(unescape(url)) + '>; rel=preload; as=' + asType);
       });
     }
 

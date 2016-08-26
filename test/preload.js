@@ -179,6 +179,16 @@ describe('preload', function () {
         .expect('Link', '</images/droids.png>; rel=preload; as=image')
         .expect(404, done);
     });
+
+    it('should URL encode link headers', function (done) {
+      var server = createServer();
+
+      request(server)
+        .get('/encoded')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect('Link', '</images/reykjav%C3%ADk.jpg>; rel=preload; as=image')
+        .expect(200, done);
+    });
   });
 
   describe('cache', function () {
@@ -386,6 +396,15 @@ function createServer(options) {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.write('<img src="/images/2015/12/Cairo.jpg" alt="Cairo" /><script src="/jquery.min.js"></script><script>console.log("foobar");</script><link href="/app.min.css" rel="stylesheet" /><link rel="apple-touch-icon" href="touch-icon-iphone.png" />');
+      res.end();
+    }
+  });
+
+  router.route('/encoded', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<img src="/images/reykjavík.jpg" alt="Reykjavík" />');
       res.end();
     }
   });
