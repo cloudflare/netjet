@@ -43,7 +43,8 @@ describe('preload', function () {
         this.server = createServer({
           images: true,
           scripts: false,
-          styles: false
+          styles: false,
+          html: false
         });
       });
 
@@ -77,7 +78,8 @@ describe('preload', function () {
         this.server = createServer({
           images: false,
           scripts: true,
-          styles: false
+          styles: false,
+          html: false
         });
       });
 
@@ -119,7 +121,8 @@ describe('preload', function () {
         this.server = createServer({
           images: false,
           scripts: false,
-          styles: true
+          styles: true,
+          html: false
         });
       });
 
@@ -152,6 +155,49 @@ describe('preload', function () {
           .get('/blog/other-link-types')
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect('Link', '</app.min.css>; rel=preload; as=style')
+          .expect(200, done);
+      });
+    });
+
+    describe('should parse out html imports', function () {
+      before(function () {
+        this.server = createServer({
+          images: false,
+          scripts: false,
+          styles: false,
+          html: true
+        });
+      });
+
+      it('should create Link header for single html import', function (done) {
+        request(this.server)
+          .get('/blog/html-import')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect('Link', '</header.html>; rel=preload; as=document')
+          .expect(200, done);
+      });
+
+      it('should create Link header for multiple html imports', function (done) {
+        request(this.server)
+          .get('/blog/multi-html-imports')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect('Link', '</header.html>; rel=preload; as=document, </footer.html>; rel=preload; as=document')
+          .expect(200, done);
+      });
+
+      it('should not create Link header for stylesheet', function (done) {
+        request(this.server)
+          .get('/blog/single-stylesheet-and-html-import')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect('Link', '</header.html>; rel=preload; as=document')
+          .expect(200, done);
+      });
+
+      it('should not create Link header for image', function (done) {
+        request(this.server)
+          .get('/blog/single-image-and-html-import')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect('Link', '</header.html>; rel=preload; as=document')
           .expect(200, done);
       });
     });
@@ -324,6 +370,42 @@ function createServer(options) {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.write('<script src="/jquery.min.js"></script>');
+      res.end();
+    }
+  });
+
+  router.route('/blog/html-import', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<link rel="import" href="/header.html">');
+      res.end();
+    }
+  });
+
+  router.route('/blog/multi-html-imports', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<link rel="import" href="/header.html"><link rel="import" href="/footer.html">');
+      res.end();
+    }
+  });
+
+  router.route('/blog/single-image-and-html-import', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<img src="/images/2015/12/Cairo.jpg" alt="Cairo" /><link rel="import" href="/header.html">');
+      res.end();
+    }
+  });
+
+  router.route('/blog/single-stylesheet-and-html-import', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<link rel="import" href="/header.html"><link href="/app.min.css" rel="stylesheet" />');
       res.end();
     }
   });
