@@ -36,12 +36,24 @@ module.exports = function netjet(options) {
     }
 
     function insertLinkArray(entries) {
+      var baseTag;
       entries.forEach(function (entry) {
-        var url = entry[0];
-        var asType = entry[1];
-
-        appendHeader('Link', '<' + encodeRFC5987(unescape(url)) + '>; rel=preload; as=' + asType);
+        if (entry[1] === 'base') {
+          baseTag = entry;
+        }
       });
+
+      entries
+        .filter(function (entry) {
+          return entry[1] !== 'base';
+        })
+        .forEach(function (entry) {
+          var url = entry[0];
+          var asType = entry[1];
+          var addBaseHref = baseTag !== undefined && !(new RegExp('^([a-z]+://|/)', 'i')).test(url);
+
+          appendHeader('Link', '<' + (addBaseHref ? baseTag[0] : '') + encodeRFC5987(unescape(url)) + '>; rel=preload; as=' + asType);
+        });
     }
 
     function processBody(body) {

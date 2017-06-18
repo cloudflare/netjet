@@ -38,6 +38,24 @@ describe('preload', function () {
       });
     });
 
+    describe('should include base href', function () {
+      before(function () {
+        this.server = createServer({
+          images: true,
+          scripts: false,
+          styles: false
+        });
+      });
+
+      it('should include for all affected URLs', function (done) {
+        request(this.server)
+          .get('/base-href/all')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect('Link', '</images/craig-david.jpg>; rel=preload; as=image, </craig-david.jpg>; rel=preload; as=image, <//cdnjs.com/jquery.js>; rel=preload; as=image, <http://cdnjs.com/jquery.js>; rel=preload; as=image, <https://cdnjs.com/jquery.js>; rel=preload; as=image')
+          .expect(200, done);
+      });
+    });
+
     describe('should parse out images', function () {
       before(function () {
         this.server = createServer({
@@ -405,6 +423,15 @@ function createServer(options) {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.write('<img src="/images/reykjavík.jpg" alt="Reykjavík" />');
+      res.end();
+    }
+  });
+
+  router.route('/base-href/all', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<base href="/"><img src="images/craig-david.jpg" /><img src="/craig-david.jpg" /><img src="//cdnjs.com/jquery.js" /><img src="http://cdnjs.com/jquery.js" /><img src="https://cdnjs.com/jquery.js" />');
       res.end();
     }
   });
