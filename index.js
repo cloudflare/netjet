@@ -19,6 +19,7 @@ module.exports = function netjet(options) {
     images: true,
     scripts: true,
     styles: true,
+    html: true,
     cache: {}
   });
 

@@ -38,6 +38,15 @@ module.exports = function (options, foundEntries) {
       });
     }
 
+    if (options.html) {
+      matchers.push({
+        tag: 'link',
+        attrs: {
+          rel: 'import'
+        }
+      });
+    }
+
     if (matchers.length) {
       tree.match(matchers, function (node) {
         switch (node.tag) {
@@ -51,7 +60,14 @@ module.exports = function (options, foundEntries) {
             foundEntries.push([node.attrs.src, 'script']);
             break;
           case 'link':
-            foundEntries.push([node.attrs.href, 'style']);
+            switch (node.attrs.rel) {
+              case 'stylesheet':
+                foundEntries.push([node.attrs.href, 'style']);
+                break;
+              case 'import':
+                foundEntries.push([node.attrs.href, 'document']);
+              // no default
+            }
             break;
           // no default
         }

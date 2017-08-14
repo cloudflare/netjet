@@ -18,7 +18,7 @@ express()
 
 ## Options
 
-* **images**, **scripts**, and **styles**: `Boolean`:
+* **images**, **scripts**, **styles**, and **html**: `Boolean`:
 
     If `true` the corresponding subresources are parsed and added as a Preload Link headers.
 
