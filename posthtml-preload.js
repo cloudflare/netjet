@@ -46,7 +46,7 @@ module.exports = function (options, foundEntries) {
             break;
           case 'img':
             // Ensure we're not preloading an inline image
-            if (node.attrs.src.indexOf('data:') !== 0) {            
+            if (node.attrs.src.indexOf('data:') !== 0) {
               foundEntries.push([node.attrs.src, 'image']);
             }
             break;
