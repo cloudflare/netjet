@@ -88,6 +88,14 @@ describe('preload', function () {
           .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image')
           .expect(200, done);
       });
+
+      it('should not create Link header for inline images', function (done) {
+        request(this.server)
+          .get('/blog/inline-image')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image')
+          .expect(200, done);
+      });
     });
 
     describe('should parse out scripts', function () {
@@ -333,6 +341,15 @@ function createServer(options) {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.write('<img src="/images/2015/12/Cairo.jpg" alt="Cairo" /><script src="/jquery.min.js"></script>');
+      res.end();
+    }
+  });
+
+  router.route('/blog/inline-image', {
+    GET: function (req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="transparent" /><img src="/images/2015/12/Cairo.jpg" alt="Cairo" /><script src="/jquery.min.js"></script>');
       res.end();
     }
   });
