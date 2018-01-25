@@ -45,6 +45,8 @@ module.exports = function (options, foundEntries) {
             foundEntries.push([node.attrs.href, 'base']);
             break;
           case 'img':
+            // Skip inline images
+            if (node.attrs.src.indexOf('data:') === 0) { break; }
             foundEntries.push([node.attrs.src, 'image']);
             break;
           case 'script':
