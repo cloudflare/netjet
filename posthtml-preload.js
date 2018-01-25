@@ -45,9 +45,10 @@ module.exports = function (options, foundEntries) {
             foundEntries.push([node.attrs.href, 'base']);
             break;
           case 'img':
-            // Skip inline images
-            if (node.attrs.src.indexOf('data:') === 0) { break; }
-            foundEntries.push([node.attrs.src, 'image']);
+            // Ensure we're not preloading an inline image
+            if (node.attrs.src.indexOf('data:') !== 0) {            
+              foundEntries.push([node.attrs.src, 'image']);
+            }
             break;
           case 'script':
             foundEntries.push([node.attrs.src, 'script']);
