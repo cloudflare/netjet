@@ -1,6 +1,6 @@
 {
   "name": "netjet",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Express middleware to generate preload headers",
   "main": "index.js",
   "scripts": {
