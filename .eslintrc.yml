@@ -1,0 +1,20 @@
+extends:
+  - plugin:prettier/recommended
+  - plugin:eslint-comments/recommended
+  - plugin:node/recommended
+  - plugin:security/recommended
+  - plugin:promise/recommended
+plugins:
+  - eslint-comments
+  - node
+  - security
+  - promise
+rules:
+  prefer-reflect: off
+  no-underscore-dangle:
+    - error
+    - allowAfterThis: true
+  prefer-rest-params: off
+  node/exports-style:
+    - error
+    - module.exports

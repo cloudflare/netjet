@@ -22,7 +22,7 @@ describe('preload', function() {
           .get('/static/image.png')
           .expect('Content-Type', 'image/png')
           .expect(function(res) {
-            expect(res.headers.link).to.not.exist();
+            expect(res.headers.link).to.not.exist(); // eslint-disable-line security/detect-non-literal-fs-filename
           })
           .expect(200, done);
       });
@@ -32,7 +32,7 @@ describe('preload', function() {
           .get('/api/whoami')
           .expect('Content-Type', 'application/json')
           .expect(function(res) {
-            expect(res.headers.link).to.not.exist();
+            expect(res.headers.link).to.not.exist(); // eslint-disable-line security/detect-non-literal-fs-filename
           })
           .expect(200, done);
       });
@@ -247,7 +247,7 @@ describe('preload', function() {
     it('should use the values from cache if etags', function() {
       var server = this.server;
 
-      request(server)
+      return request(server)
         .get('/etag/setEtag100')
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect('Link', '</images/2015/12/Cairo.jpg>; rel=preload; as=image')
@@ -261,7 +261,7 @@ describe('preload', function() {
               '</images/2015/12/Cairo.jpg>; rel=preload; as=image'
             )
             .expect(function(res) {
-              expect(res.headers.link).to.not.contain('droids');
+              expect(res.headers.link).to.not.contain('droids'); // eslint-disable-line security/detect-non-literal-fs-filename
             })
             .expect(200);
         });
@@ -288,7 +288,7 @@ describe('preload', function() {
             .expect(200);
         })
         .then(function() {
-          td.verify(disposer(), {
+          return td.verify(disposer(), {
             times: 0,
             ignoreExtraArgs: true,
           });
@@ -305,7 +305,9 @@ describe('preload', function() {
             .expect(200);
         })
         .then(function() {
-          td.verify(disposer('1', [['/images/etag1.png?count=1', 'image']]));
+          return td.verify(
+            disposer('1', [['/images/etag1.png?count=1', 'image']])
+          );
         })
         .then(function() {
           return request(server)
@@ -322,7 +324,7 @@ describe('preload', function() {
 });
 
 function createServer(options) {
-  var _preload = preload(options);
+  var preloader = preload(options);
   var router = detour();
 
   router.route('/static/image.png', {
@@ -510,7 +512,7 @@ function createServer(options) {
   });
 
   var server = http.createServer(function(req, res) {
-    _preload(req, res, function() {
+    preloader(req, res, function() {
       router.middleware(req, res);
     });
   });
@@ -519,7 +521,7 @@ function createServer(options) {
 }
 
 function createEtagServer(options) {
-  var _preload = preload(options);
+  var preloader = preload(options);
   var router = detour();
 
   router.route('/etag/setEtag100', {
@@ -587,7 +589,7 @@ function createEtagServer(options) {
   });
 
   var server = http.createServer(function(req, res) {
-    _preload(req, res, function() {
+    preloader(req, res, function() {
       router.middleware(req, res);
     });
   });
