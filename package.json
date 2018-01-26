@@ -4,7 +4,7 @@
   "description": "Express middleware to generate preload headers",
   "main": "index.js",
   "scripts": {
-    "test": "xo && istanbul cover -- _mocha --check-leaks --reporter spec",
+    "test": "istanbul cover -- _mocha --check-leaks --reporter spec",
     "coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
@@ -41,12 +41,9 @@
     "detour": "^1.3.0",
     "istanbul": "^0.4.2",
     "mocha": "^3.0.0",
+    "prettier": "^1.10.2",
     "supertest": "^2.0.0",
     "supertest-as-promised": "^4.0.0",
-    "testdouble": "^1.0.0",
-    "xo": "^0.16.0"
-  },
-  "xo": {
-    "space": true
+    "testdouble": "^1.0.0"
   }
 }

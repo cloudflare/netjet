@@ -20,13 +20,14 @@ express()
 
 * **images**, **scripts**, and **styles**: `Boolean`:
 
-    If `true` the corresponding subresources are parsed and added as a Preload Link headers.
+  If `true` the corresponding subresources are parsed and added as a Preload Link headers.
 
 * **cache**: `Object`:
 
-    Object passed straight to [`lru-cache`][lru-cache]. It is highly recommended to set `cache.max` to an integer.
+  Object passed straight to [`lru-cache`][lru-cache]. It is highly recommended to set `cache.max` to an integer.
 
 ## License
+
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://www.tldrlegal.com/l/mit) see `LICENSE.md`.
 
 [preload]: https://www.w3.org/TR/preload/

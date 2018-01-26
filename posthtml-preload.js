@@ -1,22 +1,22 @@
 'use strict';
 
-module.exports = function (options, foundEntries) {
-  return function (tree) {
+module.exports = function(options, foundEntries) {
+  return function(tree) {
     var matchers = [];
 
     matchers.push({
       tag: 'base',
       attrs: {
-        href: true
-      }
+        href: true,
+      },
     });
 
     if (options.images) {
       matchers.push({
         tag: 'img',
         attrs: {
-          src: true
-        }
+          src: true,
+        },
       });
     }
 
@@ -24,8 +24,8 @@ module.exports = function (options, foundEntries) {
       matchers.push({
         tag: 'script',
         attrs: {
-          src: true
-        }
+          src: true,
+        },
       });
     }
 
@@ -33,13 +33,13 @@ module.exports = function (options, foundEntries) {
       matchers.push({
         tag: 'link',
         attrs: {
-          rel: 'stylesheet'
-        }
+          rel: 'stylesheet',
+        },
       });
     }
 
     if (matchers.length) {
-      tree.match(matchers, function (node) {
+      tree.match(matchers, function(node) {
         switch (node.tag) {
           case 'base':
             foundEntries.push([node.attrs.href, 'base']);

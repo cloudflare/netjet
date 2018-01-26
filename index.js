@@ -19,7 +19,7 @@ module.exports = function netjet(options) {
     images: true,
     scripts: true,
     styles: true,
-    cache: {}
+    cache: {},
   });
 
   var cache = new LRU(options.cache);
@@ -37,34 +37,45 @@ module.exports = function netjet(options) {
 
     function insertLinkArray(entries) {
       var baseTag;
-      entries.forEach(function (entry) {
+      entries.forEach(function(entry) {
         if (entry[1] === 'base') {
           baseTag = entry;
         }
       });
 
       entries
-        .filter(function (entry) {
+        .filter(function(entry) {
           return entry[1] !== 'base';
         })
-        .forEach(function (entry) {
+        .forEach(function(entry) {
           var url = entry[0];
           var asType = entry[1];
-          var addBaseHref = baseTag !== undefined && !(new RegExp('^([a-z]+://|/)', 'i')).test(url);
+          var addBaseHref =
+            baseTag !== undefined &&
+            !new RegExp('^([a-z]+://|/)', 'i').test(url);
 
-          appendHeader('Link', '<' + (addBaseHref ? baseTag[0] : '') + encodeRFC5987(unescape(url)) + '>; rel=preload; as=' + asType);
+          appendHeader(
+            'Link',
+            '<' +
+              (addBaseHref ? baseTag[0] : '') +
+              encodeRFC5987(unescape(url)) +
+              '>; rel=preload; as=' +
+              asType
+          );
         });
     }
 
     function processBody(body) {
       var foundEntries = [];
 
-      posthtml().use(posthtmlPreload(options, foundEntries)).process(body, {sync: true});
+      posthtml()
+        .use(posthtmlPreload(options, foundEntries))
+        .process(body, {sync: true});
 
       return foundEntries;
     }
 
-    hijackresponse(res, function (err, res) {
+    hijackresponse(res, function(err, res) {
       /* istanbul ignore next */
       // `err` from hijackresponse is currently hardcoded to "null"
       if (err) {
@@ -93,20 +104,22 @@ module.exports = function netjet(options) {
         }
       }
 
-      res.pipe(bl(function (err, data) {
-        if (err) {
-          res.unhijack();
-          next(err);
-          return;
-        }
+      res.pipe(
+        bl(function(err, data) {
+          if (err) {
+            res.unhijack();
+            next(err);
+            return;
+          }
 
-        entries = processBody(data.toString());
+          entries = processBody(data.toString());
 
-        insertLinkArray(entries);
-        cache.set(etag, entries);
+          insertLinkArray(entries);
+          cache.set(etag, entries);
 
-        res.end(data);
-      }));
+          res.end(data);
+        })
+      );
     });
 
     next();
