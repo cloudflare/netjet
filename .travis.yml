@@ -3,8 +3,10 @@ sudo: false
 node_js:
   - 0.10
   - 0.12
-  - 4.2
-  - node
+  - 4
+  - 6
+  - stable
+  - lts/*
 before_install:
   - npm install -g npm@latest-2
 after_success:
@@ -12,3 +14,4 @@ after_success:
 branches:
   except:
     - "/^v\\d+\\.\\d+\\.\\d+$/"
+
