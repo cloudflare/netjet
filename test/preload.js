@@ -321,6 +321,35 @@ describe('preload', function() {
         });
     });
   });
+
+  describe('directives', function() {
+    it('should add a custom directive', function(done) {
+      var server = createServer({
+        directives: ['nopush'],
+      });
+
+      request(server)
+        .get('/404')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect('Link', '</images/droids.png>; rel=preload; as=image; nopush')
+        .expect(404, done);
+    });
+
+    it('should add the custom directives', function(done) {
+      var server = createServer({
+        directives: ['nopush', 'x-http2-push-only'],
+      });
+
+      request(server)
+        .get('/404')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(
+          'Link',
+          '</images/droids.png>; rel=preload; as=image; nopush; x-http2-push-only'
+        )
+        .expect(404, done);
+    });
+  });
 });
 
 function createServer(options) {
