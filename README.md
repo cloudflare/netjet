@@ -26,6 +26,10 @@ express()
 
   Object passed straight to [`lru-cache`][lru-cache]. It is highly recommended to set `cache.max` to an integer.
 
+* **directives**: `Array<String>`
+
+  List of custom directives that should be added to the Preload Link headers.
+
 ## License
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://www.tldrlegal.com/l/mit) see `LICENSE.md`.
