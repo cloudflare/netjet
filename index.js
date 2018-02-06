@@ -20,11 +20,11 @@ module.exports = function netjet(options) {
     scripts: true,
     styles: true,
     cache: {},
-    directives: [],
+    attributes: [],
   });
 
   var cache = new LRU(options.cache);
-  var directives = [''].concat(options.directives).join('; ');
+  var attributes = [''].concat(options.attributes).join('; ');
 
   return function netjetMiddleware(req, res, next) {
     function appendHeader(field, value) {
@@ -62,7 +62,8 @@ module.exports = function netjet(options) {
               (addBaseHref ? baseTag[0] : '') +
               encodeRFC5987(unescape(url)) +
               '>; rel=preload; as=' +
-              asType + directives
+              asType +
+              attributes
           );
         });
     }

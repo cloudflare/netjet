@@ -26,9 +26,9 @@ express()
 
   Object passed straight to [`lru-cache`][lru-cache]. It is highly recommended to set `cache.max` to an integer.
 
-* **directives**: `Array<String>`
+* **attributes**: `Array<String>`
 
-  List of custom directives that should be added to the Preload Link headers.
+  List of custom attributes that should be added to the Preload Link headers.
 
 ## License
 

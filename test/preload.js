@@ -322,10 +322,10 @@ describe('preload', function() {
     });
   });
 
-  describe('directives', function() {
-    it('should add a custom directive', function(done) {
+  describe('attributes', function() {
+    it('should add a custom attribute', function(done) {
       var server = createServer({
-        directives: ['nopush'],
+        attributes: ['nopush'],
       });
 
       request(server)
@@ -335,9 +335,9 @@ describe('preload', function() {
         .expect(404, done);
     });
 
-    it('should add the custom directives', function(done) {
+    it('should add the custom attributes', function(done) {
       var server = createServer({
-        directives: ['nopush', 'x-http2-push-only'],
+        attributes: ['nopush', 'x-http2-push-only'],
       });
 
       request(server)
