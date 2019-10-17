@@ -121,7 +121,14 @@ describe('preload', function() {
           .expect(200, done);
       });
 
-      it('should create Link header for mutliple scripts', function(done) {
+      it('should ignore nomodule scripts', function(done) {
+        request(this.server)
+          .get('/blog/nomodule-script')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect(200, done);
+      });
+
+      it('should create Link header for multiple scripts', function(done) {
         request(this.server)
           .get('/blog/multi-script')
           .expect('Content-Type', 'text/html; charset=utf-8')
@@ -421,6 +428,15 @@ function createServer(options) {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.write('<script src="/jquery.min.js"></script>');
+      res.end();
+    },
+  });
+
+  router.route('/blog/nomodule-script', {
+    GET: function(req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<script src="/jquery.min.js" nomodule defer></script>');
       res.end();
     },
   });
