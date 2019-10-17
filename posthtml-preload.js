@@ -48,14 +48,14 @@ module.exports = function(options, foundEntries) {
           case 'img':
             // Ensure we're not preloading an inline image
             if (node.attrs.src.indexOf('data:') !== 0) {
-              foundEntries.push([node.attrs.src, 'image']);
+              foundEntries.push([node.attrs.src, node.attrs.crossorigin, 'image']);
             }
             break;
           case 'script':
-            foundEntries.push([node.attrs.src, 'script']);
+            foundEntries.push([node.attrs.src, node.attrs.crossorigin, 'script']);
             break;
           case 'link':
-            foundEntries.push([node.attrs.href, 'style']);
+            foundEntries.push([node.attrs.href, node.attrs.crossorigin, 'style']);
             break;
           // no default
         }
