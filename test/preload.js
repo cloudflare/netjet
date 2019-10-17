@@ -128,6 +128,14 @@ describe('preload', function() {
           .expect(200, done);
       });
 
+      it('should include crossorigin property on scripts', function(done) {
+        request(this.server)
+          .get('/blog/module-script')
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect('Link', '</jquery.min.js>; rel=preload; as=script; crossorigin=anonymous')
+          .expect(200, done);
+      });
+
       it('should create Link header for multiple scripts', function(done) {
         request(this.server)
           .get('/blog/multi-script')
@@ -313,7 +321,7 @@ describe('preload', function() {
         })
         .then(function() {
           return td.verify(
-            disposer('1', [['/images/etag1.png?count=1', 'image']])
+            disposer('1', [['/images/etag1.png?count=1', undefined, 'image']])
           );
         })
         .then(function() {
@@ -437,6 +445,15 @@ function createServer(options) {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.write('<script src="/jquery.min.js" nomodule defer></script>');
+      res.end();
+    },
+  });
+
+  router.route('/blog/module-script', {
+    GET: function(req, res) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.write('<script src="/jquery.min.js" type="module" crossorigin="anonymous" defer></script>');
       res.end();
     },
   });

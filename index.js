@@ -51,10 +51,16 @@ module.exports = function netjet(options) {
         })
         .forEach(function(entry) {
           var url = entry[0];
-          var asType = entry[1];
+          var crossOrigin = entry[1];
+          var asType = entry[2];
           var addBaseHref =
             baseTag !== undefined &&
             !new RegExp('^([a-z]+://|/)', 'i').test(url);
+
+          var crossOriginString = '';
+          if (crossOrigin) {
+            crossOriginString = '; crossorigin=' + crossOrigin;
+          }
 
           appendHeader(
             'Link',
@@ -63,6 +69,7 @@ module.exports = function netjet(options) {
               encodeRFC5987(unescape(url)) +
               '>; rel=preload; as=' +
               asType +
+              crossOriginString + 
               attributes
           );
         });
