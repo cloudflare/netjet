@@ -25,6 +25,7 @@ module.exports = function(options, foundEntries) {
         tag: 'script',
         attrs: {
           src: true,
+          nomodule: false,
         },
       });
     }
