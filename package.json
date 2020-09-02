@@ -29,7 +29,7 @@
     "posthtml-preload.js"
   ],
   "dependencies": {
-    "bl": "^1.0.1",
+    "bl": "^2.2.1",
     "hijackresponse": "^2.0.0",
     "lodash.defaults": "^4.0.0",
     "lodash.unescape": "^4.0.0",
